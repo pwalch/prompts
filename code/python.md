@@ -50,6 +50,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - **Absolute imports only**.
   - Group order: stdlib → third-party → local.
   - Blank line between groups.
+- keep `__init__.py` files empty
 
 
 ## 3. Code Structure
