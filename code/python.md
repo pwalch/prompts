@@ -21,6 +21,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - No untyped function defs.
   - Require return type annotations.
   - No untyped `Any` except where unavoidable.
+- never use `__future__`
 
 
 ## 2. Repository Layout
