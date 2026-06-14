@@ -113,7 +113,8 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 
 ## HTTP
 
-- Use `requests` only.
+- Use `requests` when you want to make an HTTP request
+- In case an external library happens to use `urllib` internally, rather than `requests`, that is okay and there is no need to re-implement it with `requests`.
 - Centralize session logic in helper (with retries).
 - Defaults:
   - Timeout = **10 seconds**.
