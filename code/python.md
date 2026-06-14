@@ -10,10 +10,11 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 - Human-first ergonomics: expose predictable, consistent CLIs; produce readable logs locally and switch to structured output when automation needs it. Fail fast with actionable messages and offer sensible verbosity controls instead of noisy output.
 - Constraints as leverage: limit supported platforms and narrow the "blessed" patterns so everyone solves problems the same way. Prefer removing options over adding configuration; consistency beats personal preference across the repo.
 
-## 1. Foundations
+## Foundations
 
 - **Python version:** 3.13+
 - **Supported platforms:** macOS, Linux (never Windows)
+- **Python interpreter management:** [lonesnake](http://github.com/pwalch/lonesnake) with `direnv`
 - **Formatter & linter:** [Ruff](https://docs.astral.sh/ruff/) only
   - Line length: **100**
   - Handles formatting, linting, and import sorting (no Black, no isort).
@@ -24,7 +25,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 - never use `__future__`
 
 
-## 2. Repository Layout
+## Repository Layout
 
 - <repo_name>/
 - bin/
@@ -53,7 +54,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 - keep `__init__.py` files empty
 
 
-## 3. Code Structure
+## Code Structure
 
 - Each script:
   - Begins with `#!/usr/bin/env python`.
@@ -73,22 +74,19 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
  - **External integrations:** encapsulate all calls to third‑party systems (e.g., Slack, RabbitMQ, payment gateways) behind a small Facade that presents a narrow, domain‑oriented API. Do not import vendor SDKs outside the Facade. The Facade owns timeouts/retries, request/response mapping (Pydantic models), and error translation; expose a `Protocol`/interface for DI and testing.
 
 
-## 4. CLI & I/O
+## CLI & I/O
 
 - Every tool exposes a CLI with `argparse`.
 - **Flat flags** for simple CLIs; **subparsers** for complex hierarchies.
 - **Configuration precedence:** CLI > environment variables (no dotenv, no config files).
 - **Output:**
-  - Default: human-readable text.
-  - Must support `--verbose/--quiet`.
-  - Must support `--output-format {text,json}`.
+  - Hhuman-readable text.
+  - If necessary, `--verbose/--quiet` or `--output-format {text,json}` can be added later, as needed
 
-
-## 5. Logging & Errors
+## Logging & Errors
 
 - **Logger:** [structlog](https://www.structlog.org/).
-- **Default rendering:** human-readable.
-- Switch to JSON when `--output-format json` is requested.
+- **Rendering:** human-readable.
 - Timestamps included (UTC, ISO-8601 with `Z`).
 - Log levels uppercase (`INFO`, `ERROR`, etc.).
 - **Errors:**
@@ -97,7 +95,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - Allow broad `except Exception` only at **CLI entrypoints** or **web boundaries**, never deeper.
 
 
-## 6. Data & Models
+## Data & Models
 
 - **Naming:**
   - Avoid generic names like `Meta` or `Info`.
@@ -113,7 +111,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - Serialize as ISO-8601 with `Z` (e.g., `2025-08-30T12:00:00Z`).
 
 
-## 7. HTTP
+## HTTP
 
 - Use `requests` only.
 - Centralize session logic in helper (with retries).
@@ -124,7 +122,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - Include descriptive `User-Agent`.
 
 
-## 8. Style & Documentation
+## Style & Documentation
 
 - **Naming conventions:**
   - Modules/packages: `snake_case`
@@ -138,7 +136,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - Explain **how/why**, not what.
 
 
-## 9. Testing
+## Testing
 
 - Framework: `pytest`.
 - Layout: `tests/` at repo root; files named `test_*.py`.
@@ -149,7 +147,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 - **No coverage target enforced**.
 
 
-## 10. Dependencies
+## Dependencies
 
 - Dependency management: **pip-tools**.
 - Declare base deps in `requirements.in`, pin with `pip-compile` to `requirements.txt`.
@@ -158,17 +156,18 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
   - `requests`, `structlog`, `pydantic`, `pytest`, `ruff`, `ty`.
 
 
-## 11. CI/CD
+## CI/CD
 
-- Standard CI required.
-- **GitHub Actions** baseline:
-  - Install deps with pip-tools.
-  - Run Ruff (`check` + `format --check`).
-  - Run `ty` type checker.
-  - Run tests with `pytest`.
+No CI, but respect the following if a CI is requested:
+
+**GitHub Actions** baseline:
+- Install deps with pip-tools.
+- Run Ruff (`check` + `format --check`).
+- Run `ty` type checker.
+- Run tests with `pytest`.
 
 
-## 12. Versioning & Workflow
+## Versioning & Workflow
 
 - **Versioning:** Semantic Versioning (`vMAJOR.MINOR.PATCH`).
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `perf:`, `build:`).
@@ -176,7 +175,7 @@ This convention is opinionated and pragmatic: it trades breadth for consistency 
 - **Releases:** tag with SemVer-aligned tags.
 
 
-## 13. Security & Misc
+## Security & Misc
 
 - No secrets in code.
 - Secrets loaded only from environment variables.
